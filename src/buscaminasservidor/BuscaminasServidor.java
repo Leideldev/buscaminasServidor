@@ -20,7 +20,7 @@ public class BuscaminasServidor {
         juego.crearPanelJuego(10,10);
         juego.agregarPanelesTablero();
         juego.llenarPanelJuego();
-        
+        juego.contarMinasAdyacentes();
     }
     
 }

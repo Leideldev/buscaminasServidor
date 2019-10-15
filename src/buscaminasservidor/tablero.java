@@ -21,7 +21,7 @@ public class tablero {
     int tamanoy;   
     JFrame tablero;
     JPanel panelJuego;
-   
+    casilla[][] juego;
 
     public int getTamanox() {
         return tamanox;
@@ -79,7 +79,7 @@ public class tablero {
     }
     
     public void llenarPanelJuego(){
-   
+     juego = new casilla[tamanox][tamanoy];
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
@@ -88,11 +88,74 @@ public class tablero {
               panelJuego.add(casillaObjeto.getCasillaTablero());   
           }else{
            panelJuego.add(casillaObjeto.getCasillaTablero());     
-          }     
+          }
+            
+          juego[i][j] = casillaObjeto;
       }   
       }  
     }
     
+    public void contarMinasAdyacentes(){
+        int minas = 0;
+              for(int i=0;i < tamanox; i++){        
+        for(int j=0;j < tamanoy; j++){
+            if(!juego[i][j].tieneMina){
+                        
+            if(esCasillaValida(i-1,j)){
+                if(juego[i-1][j].tieneMina){
+                    minas++;
+                }            
+            }
+            if(esCasillaValida(i+1,j)){
+                if(juego[i+1][j].tieneMina){
+                    minas++;
+                }            
+            } 
+            if(esCasillaValida(i,j+1)){
+                if(juego[i][j+1].tieneMina){
+                    minas++;
+                }            
+            } 
+            if(esCasillaValida(i,j-1)){
+                if(juego[i][j-1].tieneMina){
+                    minas++;
+                }            
+            } 
+            if(esCasillaValida(i-1,j+1)){
+                if(juego[i-1][j+1].tieneMina){
+                    minas++;
+                }            
+            }
+            if(esCasillaValida(i-1,j-1)){
+                if(juego[i-1][j-1].tieneMina){
+                    minas++;
+                }            
+            } 
+            if(esCasillaValida(i+1,j+1)){
+                if(juego[i+1][j+1].tieneMina){
+                    minas++;
+                }            
+            } 
+            if(esCasillaValida(i+1,j-1)){
+                if(juego[i+1][j-1].tieneMina){
+                    minas++;
+                }            
+            }
+            juego[i][j].casillaTablero.setText(String.valueOf(minas));
+            minas=0;
+            }else{
+               juego[i][j].casillaTablero.setText("*"); 
+               
+            }
+      }   
+      }         
+    }
+ 
     
-   
+    public boolean esCasillaValida(int pocisionx,int pocisiony){
+        if(pocisionx >= 0 && pocisiony >= 0 && pocisionx <= tamanox-1 && pocisiony <= tamanox-1){
+            return true;
+        }
+        return false;
+    }
 }

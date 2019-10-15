@@ -31,9 +31,7 @@ public class casilla implements ActionListener  {
         this.posiciony = pocisiony;  
         
     }
-    
-    
-    
+       
     public JButton getCasillaTablero() {
         return casillaTablero;
     }
@@ -84,8 +82,8 @@ public class casilla implements ActionListener  {
         if(map.get(e.getSource()).tieneMina){     
             System.out.println("valiste keso tiene mina");
         }else{
-           map.get(e.getSource()).casillaTablero.setEnabled(false);
-           
+           System.out.println(map.get(e.getSource()).casillaTablero.getText());  
+           map.get(e.getSource()).casillaTablero.setEnabled(false);          
         }
         
     }
