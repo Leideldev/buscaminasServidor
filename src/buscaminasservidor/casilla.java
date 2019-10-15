@@ -16,16 +16,17 @@ import javax.swing.JButton;
  */
 public class casilla implements ActionListener  {
     
-    JButton casillaTablero;  
+    JButton casillaTablero;
+    tablero objetoTablero = new tablero();
     int posicionx;
     int posiciony;
     boolean tieneMina = false;
-    boolean tieneNumero;    
+    int numero=0;    
     HashMap<JButton, casilla> map = new HashMap<JButton, casilla>();
     
     casilla(int pocisionx,int pocisiony){
         this.casillaTablero = new JButton();
-        this.casillaTablero.addActionListener(this);       
+        this.casillaTablero.addActionListener(this); 
         this.map.put(this.casillaTablero, this);
         this.posicionx = pocisionx;
         this.posiciony = pocisiony;  
@@ -64,13 +65,23 @@ public class casilla implements ActionListener  {
         this.tieneMina = tieneMina;
     }
 
-    public boolean isTieneNumero() {
-        return tieneNumero;
+    public int getNumero() {
+        return numero;
     }
 
-    public void setTieneNumero(boolean tieneNumero) {
-        this.tieneNumero = tieneNumero;
+    public void setNumero(int numero) {
+        this.numero = numero;
     }
+
+    public HashMap<JButton, casilla> getMap() {
+        return map;
+    }
+
+    public void setMap(HashMap<JButton, casilla> map) {
+        this.map = map;
+    }
+
+   
     
     
     public void descubrirCasillasAdyacentes(int pocisionx,int pocisiony){
@@ -82,8 +93,11 @@ public class casilla implements ActionListener  {
         if(map.get(e.getSource()).tieneMina){     
             System.out.println("valiste keso tiene mina");
         }else{
-           System.out.println(map.get(e.getSource()).casillaTablero.getText());  
-           map.get(e.getSource()).casillaTablero.setEnabled(false);          
+           
+           objetoTablero.descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);
+            System.out.println(map.get(e.getSource()).posicionx + "," + map.get(e.getSource()).posiciony);
+           map.get(e.getSource()).casillaTablero.setEnabled(false);
+           map.get(e.getSource()).casillaTablero.setText(String.valueOf(numero));
         }
         
     }

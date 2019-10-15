@@ -18,9 +18,10 @@ public class BuscaminasServidor {
         tablero juego = new tablero();
         juego.crearTablero();
         juego.crearPanelJuego(10,10);
-        juego.agregarPanelesTablero();
         juego.llenarPanelJuego();
+        juego.agregarPanelesTablero();
         juego.contarMinasAdyacentes();
+       
     }
     
 }
