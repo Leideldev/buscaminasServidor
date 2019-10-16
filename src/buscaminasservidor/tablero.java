@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,13 +19,16 @@ import javax.swing.JPanel;
  *
  * @author Fer
  */
-public class tablero{
+public class tablero implements ActionListener{
     
+    HashMap<JButton, casilla> map = new HashMap<JButton, casilla>();
     int tamanox;
     int tamanoy;   
     JFrame tablero;
     JPanel panelJuego;
     casilla[][] juego;
+    JButton [][] botones;
+    
     public int getTamanox() {
         return tamanox;
     }
@@ -84,16 +88,19 @@ public class tablero{
     
     public void llenarPanelJuego(){
      juego = new casilla[tamanox][tamanoy];
+    
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.80){              
+          if (Math.random() > 0.90){              
               casillaObjeto.setTieneMina(true);
               panelJuego.add(casillaObjeto.getCasillaTablero());
-              
+              casillaObjeto.getCasillaTablero().addActionListener(this);
+              map.put(casillaObjeto.casillaTablero, casillaObjeto);
           }else{
            panelJuego.add(casillaObjeto.getCasillaTablero());
-         
+            casillaObjeto.getCasillaTablero().addActionListener(this);
+            map.put(casillaObjeto.casillaTablero, casillaObjeto);
           }
             
           juego[i][j] = casillaObjeto;
@@ -242,5 +249,18 @@ public class tablero{
         }   
        
         return false;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(map.get(e.getSource()).isTieneMina()){
+            System.out.println("valiste tiene mina");
+        }else{
+            map.get(e.getSource()).casillaTablero.setEnabled(false);
+            map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
+            descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);
+            
+        }
+       
     }
 }

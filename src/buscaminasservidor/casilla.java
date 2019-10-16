@@ -14,7 +14,7 @@ import javax.swing.JButton;
  *
  * @author Fer
  */
-public class casilla implements ActionListener  {
+public class casilla   {
     
     JButton casillaTablero;
     tablero objetoTablero = new tablero();
@@ -26,8 +26,7 @@ public class casilla implements ActionListener  {
     HashMap<JButton, casilla> map = new HashMap<JButton, casilla>();
     
     casilla(int pocisionx,int pocisiony){
-        this.casillaTablero = new JButton();
-        this.casillaTablero.addActionListener(this); 
+        this.casillaTablero = new JButton();    
         this.map.put(this.casillaTablero, this);
         this.posicionx = pocisionx;
         this.posiciony = pocisiony;  
@@ -86,21 +85,9 @@ public class casilla implements ActionListener  {
     public void setMap(HashMap<JButton, casilla> map) {
         this.map = map;
     }
-
-    
-    
-    @Override
-    public void actionPerformed(ActionEvent e){
-        if(map.get(e.getSource()).tieneMina){     
-            System.out.println("valiste keso tiene mina");
-        }else{    
-    
-           objetoTablero.descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);
-            System.out.println(map.get(e.getSource()).posicionx + "," + map.get(e.getSource()).posiciony);
-           
-        }
-        
-    }
+     
+   
+}
    
     
-}
+
