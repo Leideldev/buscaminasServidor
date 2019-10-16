@@ -17,8 +17,7 @@ public class BuscaminasServidor {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        tablero juego = new tablero();
-       
+        tablero juego = new tablero();       
         juego.crearTablero();
         juego.crearPanelJuego(10,10);
         juego.llenarPanelJuego();

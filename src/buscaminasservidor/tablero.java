@@ -7,27 +7,38 @@ package buscaminasservidor;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Fer
  */
-public class tablero implements ActionListener{
+public class tablero implements MouseListener{
     
     HashMap<JButton, casilla> map = new HashMap<JButton, casilla>();
     int tamanox;
     int tamanoy;   
     JFrame tablero;
     JPanel panelJuego;
+    int minasTablero;
+    int marcaValida;
     casilla[][] juego;
-    JButton [][] botones;
+    jugador Jugador1 = new jugador();
+    
     
     public int getTamanox() {
         return tamanox;
@@ -92,14 +103,15 @@ public class tablero implements ActionListener{
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.90){              
+          if (Math.random() > 0.95){              
               casillaObjeto.setTieneMina(true);
+              minasTablero++;
               panelJuego.add(casillaObjeto.getCasillaTablero());
-              casillaObjeto.getCasillaTablero().addActionListener(this);
+              casillaObjeto.getCasillaTablero().addMouseListener(this);
               map.put(casillaObjeto.casillaTablero, casillaObjeto);
           }else{
            panelJuego.add(casillaObjeto.getCasillaTablero());
-            casillaObjeto.getCasillaTablero().addActionListener(this);
+            casillaObjeto.getCasillaTablero().addMouseListener(this);
             map.put(casillaObjeto.casillaTablero, casillaObjeto);
           }
             
@@ -111,53 +123,63 @@ public class tablero implements ActionListener{
     }
     
     public void contarMinasAdyacentes(){
-        int minas = 0;
+        int numero = 0;
+        
               for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){
             if(!juego[i][j].tieneMina){
                         
             if(esCasillaValida(i-1,j)){
                 if(juego[i-1][j].tieneMina){
-                    minas++;
+                    numero++;
+                    
                 }            
             }
             if(esCasillaValida(i+1,j)){
                 if(juego[i+1][j].tieneMina){
-                    minas++;
+                    numero++;
+                    
                 }            
             } 
             if(esCasillaValida(i,j+1)){
                 if(juego[i][j+1].tieneMina){
-                    minas++;
+                    numero++;
+                
                 }            
             } 
             if(esCasillaValida(i,j-1)){
                 if(juego[i][j-1].tieneMina){
-                    minas++;
+                    numero++;
+                 
                 }            
             } 
             if(esCasillaValida(i-1,j+1)){
                 if(juego[i-1][j+1].tieneMina){
-                    minas++;
+                    numero++;
+                    
                 }            
             }
             if(esCasillaValida(i-1,j-1)){
                 if(juego[i-1][j-1].tieneMina){
-                    minas++;
+                    numero++;
+                  
                 }            
             } 
             if(esCasillaValida(i+1,j+1)){
                 if(juego[i+1][j+1].tieneMina){
-                    minas++;
+                    numero++;
+                    
                 }            
             } 
             if(esCasillaValida(i+1,j-1)){
                 if(juego[i+1][j-1].tieneMina){
-                    minas++;
+                    numero++;
+                    
                 }            
             }
-            juego[i][j].numero = minas;
-            minas=0;
+            juego[i][j].numero = numero;
+            numero=0;
+            
             }
       }   
       }         
@@ -239,8 +261,24 @@ public class tablero implements ActionListener{
  
     }
     
+    public void validarMinaMarcada(MouseEvent e){
+        if(map.get(e.getSource()).isTieneMina()){
+            marcaValida++;         
+        }else{
+            if(marcaValida != 0){
+               marcaValida--;  
+            }     
+        }
+    }
     
-    
+    public void partidaPerdida(){
+        for(int i=0;i < tamanox; i++){ 
+           for(int j=0;j < tamanoy; j++){ 
+             juego[i][j].casillaTablero.setEnabled(false);
+             juego[i][j].casillaTablero.setBackground(Color.red);
+        }  
+        }         
+    }
     
     public boolean esCasillaValida(int pocisionx,int pocisiony){
         if(pocisionx >= 0 && pocisiony >= 0 && pocisionx < tamanox && pocisiony < tamanoy){
@@ -251,16 +289,74 @@ public class tablero implements ActionListener{
         return false;
     }
 
+    
+
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if(map.get(e.getSource()).isTieneMina()){
-            System.out.println("valiste tiene mina");
+    public void mouseClicked(MouseEvent e) {
+       if(e.getButton() == 1){
+       if(Jugador1.sigueJugando){
+       if(!Jugador1.ganador){    
+       if(map.get(e.getSource()).isTieneMina()){ 
+            partidaPerdida();
+            Jugador1.sigueJugando = false;
+            JOptionPane.showMessageDialog(null, "Perdiste demente");
         }else{
-            map.get(e.getSource()).casillaTablero.setEnabled(false);
+            map.get(e.getSource()).casillaTablero.setEnabled(false);         
             map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
             descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);
             
-        }
+        } 
+       }
+    }
+       }
        
+    if(e.getButton() == 3){
+        try {
+            if(Jugador1.sigueJugando){
+                if(!Jugador1.ganador){  
+            if(map.get(e.getSource()).tieneBandera){
+                map.get(e.getSource()).casillaTablero.setIcon(null);
+                 map.get(e.getSource()).tieneBandera = false;
+            }else{
+                 Image img = ImageIO.read(new FileInputStream("C:\\Users\\Fer\\Documents\\NetBeansProjects\\buscaminasServidor\\src\\images\\bandera.bmp"));
+                 map.get(e.getSource()).casillaTablero.setIcon(new ImageIcon(img));
+                  map.get(e.getSource()).tieneBandera = true;
+                   validarMinaMarcada(e);
+                  if(marcaValida == minasTablero){
+                      JOptionPane.showMessageDialog(null, "Ganaste burro");
+                      Jugador1.ganador = true;
+                  }else{
+                      System.out.println("Quedan: " + minasTablero + " minas");
+                  }
+                  System.out.println(marcaValida);
+            }
+            }
+            }
+  } catch (Exception ex) {
+    System.out.println(ex);
+  }
+    }
+       
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        
+        
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+       
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+       
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        
     }
 }

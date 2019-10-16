@@ -22,6 +22,7 @@ public class casilla   {
     int posicionx;
     int posiciony;
     boolean tieneMina = false;
+    boolean tieneBandera= false;
     int numero=0;    
     HashMap<JButton, casilla> map = new HashMap<JButton, casilla>();
     
@@ -30,10 +31,6 @@ public class casilla   {
         this.map.put(this.casillaTablero, this);
         this.posicionx = pocisionx;
         this.posiciony = pocisiony;  
-        
-    }
-    
-    casilla(){
         
     }
     
