@@ -36,6 +36,7 @@ public class tablero implements MouseListener{
     JPanel panelJuego;
     int minasTablero;
     int marcaValida;
+    int casillasPorAbrir;
     casilla[][] juego;
     jugador Jugador1 = new jugador();
     
@@ -116,10 +117,10 @@ public class tablero implements MouseListener{
           }
             
           juego[i][j] = casillaObjeto;
-         
+          
       }   
       } 
-      
+      casillasPorAbrir = map.size() - minasTablero;
     }
     
     public void contarMinasAdyacentes(){
@@ -186,18 +187,19 @@ public class tablero implements MouseListener{
     }
     
     public void descubrirAdyacentes(int posicionx, int posiciony){
-   
+   casillasPorAbrir--;
         if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 ){
             juego[posicionx][posiciony].revisada=true;
             juego[posicionx][posiciony].casillaTablero.setEnabled(false);
             juego[posicionx][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony].numero));
-            
+           
              if(esCasillaValida(posicionx-1,posiciony)){  
                 if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada){         
                     juego[posicionx-1][posiciony].casillaTablero.setEnabled(false);
                     juego[posicionx-1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony].numero));
                      juego[posicionx-1][posiciony].revisada=true;
                     descubrirAdyacentes(posicionx-1,  posiciony);
+                    
                 }            
             }
             if(esCasillaValida(posicionx+1,posiciony)){
@@ -207,6 +209,7 @@ public class tablero implements MouseListener{
                      juego[posicionx+1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony].numero));
                       juego[posicionx+1][posiciony].revisada=true;
                      descubrirAdyacentes(posicionx+1,  posiciony);
+                    
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony+1)){               
@@ -215,6 +218,7 @@ public class tablero implements MouseListener{
                      juego[posicionx][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony+1].numero));
                       juego[posicionx][posiciony+1].revisada=true;
                      descubrirAdyacentes(posicionx,  posiciony+1);
+                     
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony-1)){
@@ -223,6 +227,7 @@ public class tablero implements MouseListener{
                      juego[posicionx][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony-1].numero));
                       juego[posicionx][posiciony-1].revisada=true;
                      descubrirAdyacentes( posicionx,  posiciony-1);
+                  
                 }            
             } 
             if(esCasillaValida(posicionx-1,posiciony+1)){
@@ -231,6 +236,7 @@ public class tablero implements MouseListener{
                      juego[posicionx-1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony+1].numero));
                       juego[posicionx-1][posiciony+1].revisada=true;
                      descubrirAdyacentes(posicionx-1,  posiciony+1);
+                   
                 }            
             }
             if(esCasillaValida(posicionx-1,posiciony-1)){
@@ -239,6 +245,7 @@ public class tablero implements MouseListener{
                    juego[posicionx-1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony-1].numero));
                     juego[posicionx-1][posiciony-1].revisada=true;
                    descubrirAdyacentes(posicionx-1,  posiciony-1);
+                 
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony+1)){
@@ -247,6 +254,7 @@ public class tablero implements MouseListener{
                     juego[posicionx+1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony+1].numero));
                      juego[posicionx+1][posiciony+1].revisada=true;
                     descubrirAdyacentes(posicionx+1,  posiciony+1);
+                   
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony-1)){
@@ -255,6 +263,7 @@ public class tablero implements MouseListener{
                     juego[posicionx+1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony-1].numero));
                      juego[posicionx+1][posiciony-1].revisada=true;
                       descubrirAdyacentes(posicionx+1,  posiciony-1);
+                     
                 }            
             }
         }
@@ -262,13 +271,13 @@ public class tablero implements MouseListener{
     }
     
     public void validarMinaMarcada(MouseEvent e){
-        if(map.get(e.getSource()).isTieneMina()){
-            marcaValida++;         
-        }else{
-            if(marcaValida != 0){
-               marcaValida--;  
-            }     
+        if(map.get(e.getSource()).isTieneMina() && !map.get(e.getSource()).estaMarcada){
+            marcaValida++;
+            map.get(e.getSource()).estaMarcada=true;
+        }  else{
+           
         }
+        
     }
     
     public void partidaPerdida(){
@@ -279,6 +288,7 @@ public class tablero implements MouseListener{
         }  
         }         
     }
+    
     
     public boolean esCasillaValida(int pocisionx,int pocisiony){
         if(pocisionx >= 0 && pocisiony >= 0 && pocisionx < tamanox && pocisiony < tamanoy){
@@ -294,6 +304,7 @@ public class tablero implements MouseListener{
     @Override
     public void mouseClicked(MouseEvent e) {
        if(e.getButton() == 1){
+           
        if(Jugador1.sigueJugando){
        if(!Jugador1.ganador){    
        if(map.get(e.getSource()).isTieneMina()){ 
@@ -301,10 +312,18 @@ public class tablero implements MouseListener{
             Jugador1.sigueJugando = false;
             JOptionPane.showMessageDialog(null, "Perdiste demente");
         }else{
-            map.get(e.getSource()).casillaTablero.setEnabled(false);         
+            map.get(e.getSource()).casillaTablero.setEnabled(false);  
             map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
-            descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);
+            if(casillasPorAbrir != 0){
+              descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);  
+            }
             
+            if(marcaValida == minasTablero && casillasPorAbrir == 0){
+                      JOptionPane.showMessageDialog(null, "Ganaste burro");
+                      Jugador1.ganador = true;
+                  }
+           System.out.println("minas validas marcadas: "+marcaValida);
+                  System.out.println("casillas abiertas: "+casillasPorAbrir);  
         } 
        }
     }
@@ -315,20 +334,25 @@ public class tablero implements MouseListener{
             if(Jugador1.sigueJugando){
                 if(!Jugador1.ganador){  
             if(map.get(e.getSource()).tieneBandera){
-                map.get(e.getSource()).casillaTablero.setIcon(null);
-                 map.get(e.getSource()).tieneBandera = false;
+                if(map.get(e.getSource()).casillaTablero.isEnabled()){
+                  map.get(e.getSource()).casillaTablero.setIcon(null);
+                 map.get(e.getSource()).tieneBandera = false;  
+                }                
             }else{
-                 Image img = ImageIO.read(new FileInputStream("C:\\Users\\Fer\\Documents\\NetBeansProjects\\buscaminasServidor\\src\\images\\bandera.bmp"));
+                if((map.get(e.getSource()).casillaTablero.isEnabled())){
+                     Image img = ImageIO.read(new FileInputStream("C:\\Users\\Fer\\Documents\\NetBeansProjects\\buscaminasServidor\\src\\images\\bandera.bmp"));
                  map.get(e.getSource()).casillaTablero.setIcon(new ImageIcon(img));
                   map.get(e.getSource()).tieneBandera = true;
+                }          
                    validarMinaMarcada(e);
-                  if(marcaValida == minasTablero){
+                  if(marcaValida == minasTablero && casillasPorAbrir == 0){
                       JOptionPane.showMessageDialog(null, "Ganaste burro");
                       Jugador1.ganador = true;
                   }else{
                       System.out.println("Quedan: " + minasTablero + " minas");
                   }
-                  System.out.println(marcaValida);
+                  System.out.println("minas validas marcadas: "+marcaValida);
+                  System.out.println("casillas abiertas: "+casillasPorAbrir);
             }
             }
             }

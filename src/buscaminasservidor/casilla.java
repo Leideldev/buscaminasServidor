@@ -23,6 +23,7 @@ public class casilla   {
     int posiciony;
     boolean tieneMina = false;
     boolean tieneBandera= false;
+    boolean estaMarcada = false;
     int numero=0;    
     HashMap<JButton, casilla> map = new HashMap<JButton, casilla>();
     
