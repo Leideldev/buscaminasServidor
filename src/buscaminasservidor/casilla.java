@@ -18,6 +18,7 @@ public class casilla implements ActionListener  {
     
     JButton casillaTablero;
     tablero objetoTablero = new tablero();
+    boolean revisada=false;
     int posicionx;
     int posiciony;
     boolean tieneMina = false;
@@ -32,6 +33,11 @@ public class casilla implements ActionListener  {
         this.posiciony = pocisiony;  
         
     }
+    
+    casilla(){
+        
+    }
+    
        
     public JButton getCasillaTablero() {
         return casillaTablero;
@@ -81,23 +87,17 @@ public class casilla implements ActionListener  {
         this.map = map;
     }
 
-   
     
-    
-    public void descubrirCasillasAdyacentes(int pocisionx,int pocisiony){
-        
-    }
     
     @Override
     public void actionPerformed(ActionEvent e){
         if(map.get(e.getSource()).tieneMina){     
             System.out.println("valiste keso tiene mina");
-        }else{
-           
+        }else{    
+    
            objetoTablero.descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);
             System.out.println(map.get(e.getSource()).posicionx + "," + map.get(e.getSource()).posiciony);
-           map.get(e.getSource()).casillaTablero.setEnabled(false);
-           map.get(e.getSource()).casillaTablero.setText(String.valueOf(numero));
+           
         }
         
     }

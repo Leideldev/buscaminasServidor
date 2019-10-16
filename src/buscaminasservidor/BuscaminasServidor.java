@@ -5,6 +5,8 @@
  */
 package buscaminasservidor;
 
+import java.awt.event.ActionEvent;
+
 /**
  *
  * @author Fer
@@ -16,11 +18,14 @@ public class BuscaminasServidor {
      */
     public static void main(String[] args) {
         tablero juego = new tablero();
+       
         juego.crearTablero();
         juego.crearPanelJuego(10,10);
         juego.llenarPanelJuego();
-        juego.agregarPanelesTablero();
+        juego.agregarPanelesTablero();        
         juego.contarMinasAdyacentes();
+        
+       
        
     }
     

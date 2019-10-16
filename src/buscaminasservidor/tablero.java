@@ -7,6 +7,9 @@ package buscaminasservidor;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,14 +18,13 @@ import javax.swing.JPanel;
  *
  * @author Fer
  */
-public class tablero {
+public class tablero{
     
     int tamanox;
     int tamanoy;   
     JFrame tablero;
     JPanel panelJuego;
     casilla[][] juego;
-
     public int getTamanox() {
         return tamanox;
     }
@@ -85,15 +87,17 @@ public class tablero {
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.9){              
+          if (Math.random() > 0.80){              
               casillaObjeto.setTieneMina(true);
-              panelJuego.add(casillaObjeto.getCasillaTablero());   
+              panelJuego.add(casillaObjeto.getCasillaTablero());
+              
           }else{
            panelJuego.add(casillaObjeto.getCasillaTablero());
-           
+         
           }
             
           juego[i][j] = casillaObjeto;
+         
       }   
       } 
       
@@ -153,55 +157,90 @@ public class tablero {
     }
     
     public void descubrirAdyacentes(int posicionx, int posiciony){
-        System.out.println((posicionx-1)+ "," + posiciony);
-        
-        if(esCasillaValida(posicionx-1,posiciony)){
-            System.out.println("llega aqui");
-                if(!juego[posicionx-1][posiciony].tieneMina && juego[posicionx-1][posiciony].casillaTablero.getText().equals("0")){
+   
+        if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 ){
+            juego[posicionx][posiciony].revisada=true;
+            juego[posicionx][posiciony].casillaTablero.setEnabled(false);
+            juego[posicionx][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony].numero));
+            
+             if(esCasillaValida(posicionx-1,posiciony)){  
+                if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada){         
                     juego[posicionx-1][posiciony].casillaTablero.setEnabled(false);
+                    juego[posicionx-1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony].numero));
+                     juego[posicionx-1][posiciony].revisada=true;
+                    descubrirAdyacentes(posicionx-1,  posiciony);
                 }            
             }
             if(esCasillaValida(posicionx+1,posiciony)){
-                if(!juego[posicionx+1][posiciony].tieneMina && juego[posicionx+1][posiciony].casillaTablero.getText().equals("0")){
+                
+                if(!juego[posicionx+1][posiciony].tieneMina && !juego[posicionx+1][posiciony].revisada){      
                      juego[posicionx+1][posiciony].casillaTablero.setEnabled(false);
+                     juego[posicionx+1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony].numero));
+                      juego[posicionx+1][posiciony].revisada=true;
+                     descubrirAdyacentes(posicionx+1,  posiciony);
                 }            
             } 
-            if(esCasillaValida(posicionx,posiciony+1)){
-                if(!juego[posicionx][posiciony+1].tieneMina && juego[posicionx][posiciony+1].casillaTablero.getText().equals("0")){
+            if(esCasillaValida(posicionx,posiciony+1)){               
+                if(!juego[posicionx][posiciony+1].tieneMina && !juego[posicionx][posiciony+1].revisada){     
                      juego[posicionx][posiciony+1].casillaTablero.setEnabled(false);
+                     juego[posicionx][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony+1].numero));
+                      juego[posicionx][posiciony+1].revisada=true;
+                     descubrirAdyacentes(posicionx,  posiciony+1);
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony-1)){
-                if(!juego[posicionx][posiciony-1].tieneMina && juego[posicionx][posiciony-1].casillaTablero.getText().equals("0")){
+                if(!juego[posicionx][posiciony-1].tieneMina && !juego[posicionx][posiciony-1].revisada){              
                      juego[posicionx][posiciony-1].casillaTablero.setEnabled(false);
+                     juego[posicionx][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony-1].numero));
+                      juego[posicionx][posiciony-1].revisada=true;
+                     descubrirAdyacentes( posicionx,  posiciony-1);
                 }            
             } 
             if(esCasillaValida(posicionx-1,posiciony+1)){
-                if(!juego[posicionx-1][posiciony+1].tieneMina && juego[posicionx-1][posiciony+1].casillaTablero.getText().equals("0")){
+                if(!juego[posicionx-1][posiciony+1].tieneMina &&  !juego[posicionx-1][posiciony+1].revisada){                  
                      juego[posicionx-1][posiciony+1].casillaTablero.setEnabled(false);
+                     juego[posicionx-1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony+1].numero));
+                      juego[posicionx-1][posiciony+1].revisada=true;
+                     descubrirAdyacentes(posicionx-1,  posiciony+1);
                 }            
             }
             if(esCasillaValida(posicionx-1,posiciony-1)){
-                if(!juego[posicionx-1][posiciony-1].tieneMina && juego[posicionx-1][posiciony-1].casillaTablero.getText().equals("0")){
+                if(!juego[posicionx-1][posiciony-1].tieneMina &&  !juego[posicionx-1][posiciony-1].revisada){       
                    juego[posicionx-1][posiciony-1].casillaTablero.setEnabled(false);
+                   juego[posicionx-1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony-1].numero));
+                    juego[posicionx-1][posiciony-1].revisada=true;
+                   descubrirAdyacentes(posicionx-1,  posiciony-1);
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony+1)){
-                if(!juego[posicionx+1][posiciony+1].tieneMina && juego[posicionx+1][posiciony+1].casillaTablero.getText().equals("0")){
+                if(!juego[posicionx+1][posiciony+1].tieneMina &&  !juego[posicionx+1][posiciony+1].revisada){              
                     juego[posicionx+1][posiciony+1].casillaTablero.setEnabled(false);
+                    juego[posicionx+1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony+1].numero));
+                     juego[posicionx+1][posiciony+1].revisada=true;
+                    descubrirAdyacentes(posicionx+1,  posiciony+1);
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony-1)){
-                if(!juego[posicionx+1][posiciony-1].tieneMina && juego[posicionx+1][posiciony-1].casillaTablero.getText().equals("0")){
+                if(!juego[posicionx+1][posiciony-1].tieneMina &&  !juego[posicionx + 1][posiciony - 1].revisada){                  
                     juego[posicionx+1][posiciony-1].casillaTablero.setEnabled(false);
+                    juego[posicionx+1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony-1].numero));
+                     juego[posicionx+1][posiciony-1].revisada=true;
+                      descubrirAdyacentes(posicionx+1,  posiciony-1);
                 }            
             }
+        }
+ 
     }
     
+    
+    
+    
     public boolean esCasillaValida(int pocisionx,int pocisiony){
-        if(pocisionx >= 0 && pocisiony >= 0 && pocisionx <= tamanox-1 && pocisiony <= tamanox-1){
+        if(pocisionx >= 0 && pocisiony >= 0 && pocisionx < tamanox && pocisiony < tamanoy){
+            
             return true;
-        }
+        }   
+       
         return false;
     }
 }
