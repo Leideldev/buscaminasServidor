@@ -92,8 +92,8 @@ public class tablero implements MouseListener{
     
     public void agregarPanelesTablero(){
         tablero.add(panelJuego);    
-        tablero.setVisible(true);
-        panelJuego.setVisible(true);
+        tablero.setVisible(false);
+        panelJuego.setVisible(false);
         panelJuego.revalidate();
         panelJuego.repaint();
     }
@@ -312,11 +312,12 @@ public class tablero implements MouseListener{
             Jugador1.sigueJugando = false;
             JOptionPane.showMessageDialog(null, "Perdiste demente");
         }else{
-            map.get(e.getSource()).casillaTablero.setEnabled(false);  
-            map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
-            if(casillasPorAbrir != 0){
+            
+            if(casillasPorAbrir != 0 && map.get(e.getSource()).casillaTablero.isEnabled()){
               descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);  
             }
+            map.get(e.getSource()).casillaTablero.setEnabled(false);  
+            map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
             
             if(marcaValida == minasTablero && casillasPorAbrir == 0){
                       JOptionPane.showMessageDialog(null, "Ganaste burro");
@@ -335,16 +336,26 @@ public class tablero implements MouseListener{
                 if(!Jugador1.ganador){  
             if(map.get(e.getSource()).tieneBandera){
                 if(map.get(e.getSource()).casillaTablero.isEnabled()){
-                  map.get(e.getSource()).casillaTablero.setIcon(null);
-                 map.get(e.getSource()).tieneBandera = false;  
+                     map.get(e.getSource()).estaMarcada=false;
+                    if(marcaValida > 0 && map.get(e.getSource()).tieneMina){
+                        System.out.println("llega a condicion");
+                        map.get(e.getSource()).casillaTablero.setIcon(null);
+                 map.get(e.getSource()).tieneBandera = false; 
+                 marcaValida--;
+                    }else if(marcaValida==0){
+                        map.get(e.getSource()).casillaTablero.setIcon(null);
+                 map.get(e.getSource()).tieneBandera = false;   
+                    }
+     map.get(e.getSource()).casillaTablero.setIcon(null);
+                 map.get(e.getSource()).tieneBandera = false;
                 }                
             }else{
                 if((map.get(e.getSource()).casillaTablero.isEnabled())){
                      Image img = ImageIO.read(new FileInputStream("C:\\Users\\Fer\\Documents\\NetBeansProjects\\buscaminasServidor\\src\\images\\bandera.bmp"));
                  map.get(e.getSource()).casillaTablero.setIcon(new ImageIcon(img));
                   map.get(e.getSource()).tieneBandera = true;
+                  validarMinaMarcada(e);
                 }          
-                   validarMinaMarcada(e);
                   if(marcaValida == minasTablero && casillasPorAbrir == 0){
                       JOptionPane.showMessageDialog(null, "Ganaste burro");
                       Jugador1.ganador = true;

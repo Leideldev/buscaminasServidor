@@ -13,4 +13,5 @@ public class jugador {
     String nombre;
     boolean sigueJugando= true;
     boolean ganador= false;
+    tablero tableroCliente;
 }
