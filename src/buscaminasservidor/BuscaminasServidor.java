@@ -38,7 +38,7 @@ public class BuscaminasServidor {
         try (ServerSocket listener = new ServerSocket(59001)) {
              tablero juego = new tablero();       
         juego.crearTablero();
-        juego.crearPanelJuego(20,10);
+        juego.crearPanelJuego(10,10);
         juego.llenarPanelJuego();
         juego.agregarPanelesTablero();        
         juego.contarMinasAdyacentes();
@@ -63,6 +63,7 @@ public class BuscaminasServidor {
 
         public void run() {
             try {
+                
                 in = new Scanner(socket.getInputStream());
                 out = new PrintWriter(socket.getOutputStream(), true);
                 ArrayList <String> bloquea = new ArrayList <String>();
@@ -82,6 +83,7 @@ public class BuscaminasServidor {
                     }
                 }
                 out.println("NAMEACCEPTED " + name);
+                out.println("SIZE " + "," + 10 + "," + 10);
                 for (PrintWriter writer : writers) {
                     writer.println("MESSAGE " + name + " has joined");
                 }

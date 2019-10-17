@@ -31,8 +31,7 @@ public class casilla   {
         this.casillaTablero = new JButton();    
         this.map.put(this.casillaTablero, this);
         this.posicionx = pocisionx;
-        this.posiciony = pocisiony;  
-        
+        this.posiciony = pocisiony;       
     }
     
        
