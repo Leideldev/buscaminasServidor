@@ -271,7 +271,13 @@ public class tablero implements MouseListener{
  
     }
     
-    
+    void descubrirCasilla(int posicionx, int posiciony){
+         if(esCasillaValida(posicionx,posiciony)){
+            juego[posicionx][posiciony].revisada=true;
+            juego[posicionx][posiciony].casillaTablero.setEnabled(false);
+            juego[posicionx][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony].numero));
+    }
+    }
     
     public String validarMinaMarcada(MouseEvent e){
         if(map.get(e.getSource()).isTieneMina() && !map.get(e.getSource()).estaMarcada){
@@ -332,7 +338,7 @@ public class tablero implements MouseListener{
        if(map.get(e.getSource()).isTieneMina()){ 
             partidaPerdida();
             Jugador1.sigueJugando = false;
-            JOptionPane.showMessageDialog(null, "Perdiste demente");
+            JOptionPane.showMessageDialog(null, "Perdiste");
         }else{
             
             if(casillasPorAbrir != 0 && map.get(e.getSource()).casillaTablero.isEnabled()){
@@ -342,7 +348,7 @@ public class tablero implements MouseListener{
             map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
             
             if(marcaValida == minasTablero && casillasPorAbrir == 0){
-                      JOptionPane.showMessageDialog(null, "Ganaste burro");
+                      JOptionPane.showMessageDialog(null, "Ganaste");
                       Jugador1.ganador = true;
                   }
            System.out.println("minas validas marcadas: "+marcaValida);
@@ -379,7 +385,7 @@ public class tablero implements MouseListener{
                   validarMinaMarcada(e);
                 }          
                   if(marcaValida == minasTablero && casillasPorAbrir == 0){
-                      JOptionPane.showMessageDialog(null, "Ganaste burro");
+                      JOptionPane.showMessageDialog(null, "Ganaste");
                       Jugador1.ganador = true;
                   }else{
                       System.out.println("Quedan: " + minasTablero + " minas");
