@@ -92,8 +92,8 @@ public class tablero implements MouseListener{
     
     public void agregarPanelesTablero(){
         tablero.add(panelJuego);    
-        tablero.setVisible(false);
-        panelJuego.setVisible(false);
+        tablero.setVisible(true);
+        panelJuego.setVisible(true);
         panelJuego.revalidate();
         panelJuego.repaint();
     }
@@ -188,6 +188,7 @@ public class tablero implements MouseListener{
     
     public void descubrirAdyacentes(int posicionx, int posiciony){
    casillasPorAbrir--;
+   
         if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 ){
             juego[posicionx][posiciony].revisada=true;
             juego[posicionx][posiciony].casillaTablero.setEnabled(false);
@@ -270,12 +271,15 @@ public class tablero implements MouseListener{
  
     }
     
-    public void validarMinaMarcada(MouseEvent e){
+    
+    
+    public String validarMinaMarcada(MouseEvent e){
         if(map.get(e.getSource()).isTieneMina() && !map.get(e.getSource()).estaMarcada){
             marcaValida++;
             map.get(e.getSource()).estaMarcada=true;
+            return "valida";
         }  else{
-           
+           return "invalida";
         }
         
     }
@@ -287,6 +291,24 @@ public class tablero implements MouseListener{
              juego[i][j].casillaTablero.setBackground(Color.red);
         }  
         }         
+    }
+    
+    public boolean validarCasillaMina(int posx, int posy){
+        if(juego[posx][posy].tieneMina && !juego[posx][posy].estaMarcada){
+            juego[posx][posy].estaMarcada = true;
+            return true;
+        }else{
+            juego[posx][posy].estaMarcada = false;
+            return false;
+        }
+    
+    }
+    
+     public boolean validarCasillaMinaClick(int posx, int posy){
+        if(juego[posx][posy].tieneMina){     
+            return true;
+        }
+    return false;
     }
     
     

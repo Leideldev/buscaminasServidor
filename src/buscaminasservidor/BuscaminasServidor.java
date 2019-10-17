@@ -5,6 +5,7 @@
  */
 package buscaminasservidor;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,12 +32,12 @@ public class BuscaminasServidor {
     private static Set<PrintWriter> writers = new HashSet<>();
    static HashMap <String, PrintWriter> map = new HashMap <String, PrintWriter> ();
    static HashMap <String, ArrayList <String>> bloqueados = new HashMap <String, ArrayList <String>> ();
-    
+   static tablero juego = new tablero(); 
     public static void main(String[] args) throws Exception  {
          System.out.println("The chat server is running... ");
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
-             tablero juego = new tablero();       
+                   
         juego.crearTablero();
         juego.crearPanelJuego(10,10);
         juego.llenarPanelJuego();
@@ -98,68 +99,30 @@ public class BuscaminasServidor {
                         return;
                     }
                     
-                    if(input.toLowerCase().startsWith("/bloquear")){
-                        System.out.println("ENTRA A BLOQUEAR");
-                        String [] bloqueado = input.toLowerCase().substring(8).trim().split(" ");
-                        boolean yabloqueado = false;
-                        if(map.get(bloqueado[1]) == null){
-                             map.get(name).println("MESSAGE " + "Sistema: El usuario no existe o no está conectado");
-                             yabloqueado=true;
-                        }else{
-                            for(int i=0; i < bloqueados.get(name).size();i++){
-                             if(bloqueados.get(name).get(i).equals(bloqueado[1])){
-                                 map.get(name).println("MESSAGE " + "Sistema: El usuario ya está bloqueado");
-                                 yabloqueado = true;
-                             }
-                        }   
-                        }
-                        if(yabloqueado != true){
-                         bloqueados.get(name).add(bloqueado[1]);
-                        map.get(name).println("MESSAGE " + "Sistema: Bloqueaste a " + bloqueado[1] );    
-                        }
-                                          
-                    }else if (input.toLowerCase().startsWith("/privado")) {
-                       System.out.println("ENTRA A PRIVADO");
-                       String [] mensaje = input.toLowerCase().substring(8).trim().split(" ");
-                       String mensajes = "";
-                       
-                           
-                           if(mensaje[0].equals("") || map.get(mensaje[0]) == null ){
-                               map.get(name).println("MESSAGE " + "Sistema: El nombre de destinatario es incorrecto o no existe");
-                           }else if(mensaje.length < 2){
-                               map.get(name).println("MESSAGE " + "Sistema: Escribe un mensaje para enviar al destinatario");                             
-                       }else{
-                         for(int i=1; i < mensaje.length; i++){
-                             mensajes += mensaje[i] + " ";
-                         }  
-                         if(map.get(mensaje[0]) != null){
-                             if(bloqueados.get(mensaje[0]).isEmpty()){
-                                 map.get(mensaje[0]).println("MESSAGE " +"Mensaje privado de "+ name + ": " + mensajes); 
-                             }else{
-                             
-                             if(!bloqueados.get(mensaje[0]).contains(name)){
-                                 map.get(mensaje[0]).println("MESSAGE " +"Mensaje privado de "+ name + ": " + mensajes); 
-                                 System.out.println(name);        
-                             }  
-                                      
-                        }                   
-                       }  
-                       }                                         
-                    }else{
-                        for(String usuario : map.keySet()){
-                            
-                            if(bloqueados.get(usuario).isEmpty()){
-                              map.get(usuario).println("MESSAGE " + name + ": " + input); 
-                                 
-                            }else{            
-                             if(!bloqueados.get(usuario).contains(name)){                                  
-                                 map.get(usuario).println("MESSAGE " + name + ": " + input);                                       
-                             }  
-                               
-                            }                  
-                        }
-                       
-                    }  
+                    if(input.toLowerCase().startsWith("marcar ")){
+                           String [] arrayan; 
+                           arrayan = input.split(",");                        
+                           if(juego.validarCasillaMina(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
+                               System.out.println("mina marcada");
+                           }else{
+                               System.out.println("mina no marcad");
+                           }                         
+                    }else if(input.toLowerCase().startsWith("descubrir ")){
+                        String [] arrayan; 
+                           arrayan = input.split(","); 
+                           if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
+                               out.println("PERDEDOR");
+                           }else{
+                               juego.descubrirAdyacentes(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
+                                for(int i=0;i < juego.tamanox; i++){ 
+           for(int j=0;j < juego.tamanoy; j++){ 
+             if(!juego.juego[i][j].casillaTablero.isEnabled()){
+                 out.println("ABIERTAS" + "," + juego.juego[i][j].posicionx + "," + juego.juego[i][j].posiciony + "," + juego.juego[i][j].numero);
+             }          
+        }  
+        } 
+                           }
+                    }
                 }
             } catch (Exception e) {
                 System.out.println(e);
