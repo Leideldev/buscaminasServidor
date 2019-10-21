@@ -126,9 +126,16 @@ public class BuscaminasServidor {
                     }else if(input.toLowerCase().startsWith("descubriruna ")){
                          String [] arrayan; 
                          arrayan = input.split(",");
-                         System.out.println(input);
-                        juego.descubrirCasilla(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
-                        out.println("ABIERTA" + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posicionx + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posiciony + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero );
+                         
+                         if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
+                               out.println("PERDEDOR");
+                           }else{
+                 juego.descubrirCasilla(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
+                 out.println("ABIERTA" + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posicionx + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posiciony + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero);
+                       
+        
+                           }
+                        
                     }
                 }
             } catch (Exception e) {

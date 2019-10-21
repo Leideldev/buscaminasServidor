@@ -104,7 +104,7 @@ public class tablero implements MouseListener{
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.95){              
+          if (Math.random() > 0.85){              
               casillaObjeto.setTieneMina(true);
               minasTablero++;
               panelJuego.add(casillaObjeto.getCasillaTablero());
