@@ -38,6 +38,8 @@ public class tablero implements MouseListener{
     int marcaValida;
     int casillasPorAbrir;
     casilla[][] juego;
+    String [] colores = {"GREEN","YELLOW","BLUE","ORANGE"};
+    int colorAsignado = 0;
     jugador Jugador1 = new jugador();
     
     
@@ -121,6 +123,18 @@ public class tablero implements MouseListener{
       }   
       } 
       casillasPorAbrir = map.size() - minasTablero;
+    }
+    
+    public String asignarColor(){
+        if(colorAsignado<colores.length){
+            String color = colores[colorAsignado];
+            colorAsignado++;        
+            System.out.println("Asignado color: " + colorAsignado);
+           return color;          
+        }else{
+            return "";
+        }
+        
     }
     
     public void contarMinasAdyacentes(){
@@ -293,6 +307,25 @@ public class tablero implements MouseListener{
         }         
     }
     
+    public String validarGanador(){
+      int  contadorVerde = 0;
+      int  contadorAmarillo = 0;
+        for(int i=0;i < tamanox; i++){ 
+           for(int j=0;j < tamanoy; j++){ 
+            if(juego[i][j].banderaPertenece.equals("GREEN")){
+                contadorVerde++;
+            }else if(juego[i][j].banderaPertenece.equals("YELLOW")){
+                contadorAmarillo++;
+            }
+        }      
+        }   
+        if(contadorVerde == Math.max(contadorVerde,contadorAmarillo)){
+              return "GREEN";
+           }else{
+               return "YELLOW";
+           }
+    }
+    
     public boolean validarCasillaMina(int posx, int posy){
         if(juego[posx][posy].tieneMina && !juego[posx][posy].estaMarcada){
             juego[posx][posy].estaMarcada = true;
@@ -332,7 +365,7 @@ public class tablero implements MouseListener{
        if(map.get(e.getSource()).isTieneMina()){ 
             partidaPerdida();
             Jugador1.sigueJugando = false;
-            JOptionPane.showMessageDialog(null, "Perdiste demente");
+            
         }else{
             
             if(casillasPorAbrir != 0 && map.get(e.getSource()).casillaTablero.isEnabled()){

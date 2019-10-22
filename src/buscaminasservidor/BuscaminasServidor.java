@@ -30,7 +30,7 @@ public class BuscaminasServidor {
      */
     private static Set<String> names = new HashSet<>();
     private static Set<PrintWriter> writers = new HashSet<>();
-   static HashMap <String, PrintWriter> map = new HashMap <String, PrintWriter> ();
+   static HashMap <PrintWriter, String> map = new HashMap <PrintWriter, String> ();
    static HashMap <String, ArrayList <String>> bloqueados = new HashMap <String, ArrayList <String>> ();
    static tablero juego = new tablero(); 
     public static void main(String[] args) throws Exception  {
@@ -77,35 +77,61 @@ public class BuscaminasServidor {
                     }
                     synchronized (names) {
                         if (!names.contains(name)) {
-                            names.add(name);
+                            String color= juego.asignarColor();
+                            out.println("NAMEACCEPTED " + name);
+                            out.println("SIZE " + "," + 10 + "," + 10 + "," + color);
+                            names.add(color);
                             break;
 
                         }
                     }
                 }
-                out.println("NAMEACCEPTED " + name);
-                out.println("SIZE " + "," + 10 + "," + 10);
+                
                 for (PrintWriter writer : writers) {
                     writer.println("MESSAGE " + name + " has joined");
                 }
                 
-                map.put(name, out);
+                map.put(out, name);
                 bloqueados.put(name, bloquea);
                 writers.add(out);
 
                 while (true) {
                     String input = in.nextLine();
+                    if(juego.casillasPorAbrir == 0 || juego.casillasPorAbrir <0){
+                        System.out.println("perdedores");                      
+                         for (PrintWriter writer : writers) {                             
+                                         writer.println("GANADOR" + "," + juego.validarGanador());                             
+                }
+                        break;
+                    }
                     if (input.toLowerCase().startsWith("/quit")) {
                         return;
-                    }
-                    
+                    }           
                     if(input.toLowerCase().startsWith("marcar ")){
                            String [] arrayan; 
-                           arrayan = input.split(",");                        
-                           if(juego.validarCasillaMina(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
-                               System.out.println("mina marcada");
+                           arrayan = input.split(","); 
+                           System.out.println("Color" + arrayan[3]);
+                           if(!juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].estaMarcada && juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece.equals("")){
+                              juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].estaMarcada = true;
+                               juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece = arrayan[3];
+                                for (PrintWriter writer : writers) {
+                                  
+                                         writer.println("MARCADA" + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posicionx + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posiciony + "," +arrayan[3]);
+                                    
+                }
+                               System.out.println("Entra marcar");
                            }else{
-                               System.out.println("mina no marcad");
+                               if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece.equals(arrayan[3])){                 
+                                   juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece = "";
+                                   juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].estaMarcada = false;
+                                    for (PrintWriter writer : writers) {
+                                  
+                                         writer.println("DESMARCADA" + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posicionx + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posiciony);                                   
+                }
+                                    System.out.println("mina no marcad");
+                               }
+                               
+                             
                            }                         
                     }else if(input.toLowerCase().startsWith("descubrir ")){
                         String [] arrayan; 
@@ -113,16 +139,31 @@ public class BuscaminasServidor {
                            if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
                                out.println("PERDEDOR");
                            }else{
-                               juego.descubrirAdyacentes(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
+                               if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero == 0){
+                                  juego.descubrirAdyacentes(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
                                 for(int i=0;i < juego.tamanox; i++){ 
            for(int j=0;j < juego.tamanoy; j++){ 
              if(!juego.juego[i][j].casillaTablero.isEnabled()){
-                 out.println("ABIERTAS" + "," + juego.juego[i][j].posicionx + "," + juego.juego[i][j].posiciony + "," + juego.juego[i][j].numero);
-             }          
+                  for (PrintWriter writer : writers) {
+                    writer.println("ABIERTAS" + "," + juego.juego[i][j].posicionx + "," + juego.juego[i][j].posiciony + "," + juego.juego[i][j].numero);
+                }
+             }           
+                               }                               
         }  
-        } 
+        }else{
+              if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.isEnabled()){
+               juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.setEnabled(false);
+               juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.setText(String.valueOf(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero));
+               juego.casillasPorAbrir--;
+               for (PrintWriter writer : writers) {
+                    writer.println("ABIERTA" + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posicionx + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posiciony + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero);
+                }     
+              }                    
+                               } 
                            }
                     }
+                
+                  
                 }
             } catch (Exception e) {
                 System.out.println(e);
