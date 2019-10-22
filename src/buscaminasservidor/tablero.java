@@ -106,7 +106,7 @@ public class tablero implements MouseListener{
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.95){              
+          if (Math.random() > 0.85){              
               casillaObjeto.setTieneMina(true);
               minasTablero++;
               panelJuego.add(casillaObjeto.getCasillaTablero());
@@ -285,7 +285,13 @@ public class tablero implements MouseListener{
  
     }
     
-    
+    void descubrirCasilla(int posicionx, int posiciony){
+         if(esCasillaValida(posicionx,posiciony)){
+            juego[posicionx][posiciony].revisada=true;
+            juego[posicionx][posiciony].casillaTablero.setEnabled(false);
+            juego[posicionx][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony].numero));
+    }
+    }
     
     public String validarMinaMarcada(MouseEvent e){
         if(map.get(e.getSource()).isTieneMina() && !map.get(e.getSource()).estaMarcada){
@@ -365,7 +371,11 @@ public class tablero implements MouseListener{
        if(map.get(e.getSource()).isTieneMina()){ 
             partidaPerdida();
             Jugador1.sigueJugando = false;
+<<<<<<< HEAD
             
+=======
+            JOptionPane.showMessageDialog(null, "Perdiste");
+>>>>>>> 7dab20c7fda3c03629a4746bf5b9497109922b14
         }else{
             
             if(casillasPorAbrir != 0 && map.get(e.getSource()).casillaTablero.isEnabled()){
@@ -375,7 +385,7 @@ public class tablero implements MouseListener{
             map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
             
             if(marcaValida == minasTablero && casillasPorAbrir == 0){
-                      JOptionPane.showMessageDialog(null, "Ganaste burro");
+                      JOptionPane.showMessageDialog(null, "Ganaste");
                       Jugador1.ganador = true;
                   }
            System.out.println("minas validas marcadas: "+marcaValida);
@@ -412,7 +422,7 @@ public class tablero implements MouseListener{
                   validarMinaMarcada(e);
                 }          
                   if(marcaValida == minasTablero && casillasPorAbrir == 0){
-                      JOptionPane.showMessageDialog(null, "Ganaste burro");
+                      JOptionPane.showMessageDialog(null, "Ganaste");
                       Jugador1.ganador = true;
                   }else{
                       System.out.println("Quedan: " + minasTablero + " minas");

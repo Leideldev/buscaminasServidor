@@ -5,7 +5,11 @@
             <url>src/buscaminasservidor/casilla.java</url>
             <bookmark id="1">
                 <name/>
+<<<<<<< HEAD
                 <line>88</line>
+=======
+                <line>86</line>
+>>>>>>> 7dab20c7fda3c03629a4746bf5b9497109922b14
                 <key/>
             </bookmark>
         </file>
@@ -13,7 +17,11 @@
             <url>src/buscaminasservidor/tablero.java</url>
             <bookmark id="2">
                 <name/>
+<<<<<<< HEAD
                 <line>391</line>
+=======
+                <line>342</line>
+>>>>>>> 7dab20c7fda3c03629a4746bf5b9497109922b14
                 <key/>
             </bookmark>
         </file>
