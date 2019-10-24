@@ -32,20 +32,21 @@ public class BuscaminasServidor {
     private static Set<PrintWriter> writers = new HashSet<>();
    static HashMap <PrintWriter, String> map = new HashMap <PrintWriter, String> ();
    static HashMap <String, ArrayList <String>> bloqueados = new HashMap <String, ArrayList <String>> ();
-   static tablero juego = new tablero(); 
+ 
     public static void main(String[] args) throws Exception  {
          System.out.println("The chat server is running... ");
-        ExecutorService pool = Executors.newFixedThreadPool(500);
+        
         try (ServerSocket listener = new ServerSocket(59001)) {
-                   
-        juego.crearTablero();
-        juego.crearPanelJuego(10,10);
-        juego.llenarPanelJuego();
-        juego.agregarPanelesTablero();        
-        juego.contarMinasAdyacentes();
+        tablero tableroJuego = new tablero();
+         
+            
             while (true) {
-                pool.execute(new Handler(listener.accept()));
-
+                 System.out.println(tableroJuego.jugadoresTotales);
+                 if(tableroJuego.jugadoresTotales==4){
+                     tableroJuego = new tablero();
+                     
+                 }
+                tableroJuego.pool.execute(new Handler(listener.accept(),tableroJuego));          
             }
         }
        
@@ -55,16 +56,18 @@ public class BuscaminasServidor {
 
         private String name;
         private Socket socket;
+        private tablero juego;
         private Scanner in;
         private PrintWriter out;
         
-        public Handler(Socket socket) {
+        public Handler(Socket socket, tablero tablero) {
             this.socket = socket;
+            this.juego = tablero;
         }
 
         public void run() {
             try {
-                
+                System.out.println(juego);
                 in = new Scanner(socket.getInputStream());
                 out = new PrintWriter(socket.getOutputStream(), true);
                 ArrayList <String> bloquea = new ArrayList <String>();
@@ -80,22 +83,20 @@ public class BuscaminasServidor {
                             String color= juego.asignarColor();
                             out.println("NAMEACCEPTED " + name);
                             out.println("SIZE " + "," + 10 + "," + 10 + "," + color);
+                             juego.jugadoresTotales++;
                             names.add(color);
                             break;
 
                         }
                     }
                 }
-                
-                for (PrintWriter writer : writers) {
-                    writer.println("MESSAGE " + name + " has joined");
-                }
-                
+                System.out.println(juego.toString());
                 map.put(out, name);
                 bloqueados.put(name, bloquea);
                 writers.add(out);
 
                 while (true) {
+                    System.out.println(juego.casillasPorAbrir);
                     String input = in.nextLine();
                     if(juego.casillasPorAbrir == 0 || juego.casillasPorAbrir <0){
                         System.out.println("perdedores");                      
@@ -113,6 +114,7 @@ public class BuscaminasServidor {
                            System.out.println("Color" + arrayan[3]);
                            if(!juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].estaMarcada && juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece.equals("")){
                               juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].estaMarcada = true;
+                              juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera = true;
                                juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece = arrayan[3];
                                 for (PrintWriter writer : writers) {
                                   
@@ -123,6 +125,7 @@ public class BuscaminasServidor {
                            }else{
                                if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece.equals(arrayan[3])){                 
                                    juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].banderaPertenece = "";
+                                   juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera = false;
                                    juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].estaMarcada = false;
                                     for (PrintWriter writer : writers) {
                                   
@@ -137,10 +140,10 @@ public class BuscaminasServidor {
                         String [] arrayan; 
                            arrayan = input.split(","); 
                            
-                           if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
+                           if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2])) && !juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera){
                                out.println("PERDEDOR");
                            }else{
-                               if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero == 0){
+                               if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero == 0 && !juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera){
                                   juego.descubrirAdyacentes(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
                                 for(int i=0;i < juego.tamanox; i++){ 
            for(int j=0;j < juego.tamanoy; j++){ 
@@ -152,7 +155,7 @@ public class BuscaminasServidor {
                                }                               
         }  
         }else{
-              if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.isEnabled()){
+              if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.isEnabled() && !juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera){
                juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.setEnabled(false);
                juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].casillaTablero.setText(String.valueOf(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero));
                juego.casillasPorAbrir--;
@@ -162,19 +165,6 @@ public class BuscaminasServidor {
               }                    
                                } 
                            }
-                    }else if(input.toLowerCase().startsWith("descubriruna ")){
-                         String [] arrayan; 
-                         arrayan = input.split(",");
-                         
-                         if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]))){
-                               out.println("PERDEDOR");
-                           }else{
-                 juego.descubrirCasilla(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
-                 out.println("ABIERTA" + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posicionx + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].posiciony + "," + juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero);
-                       
-        
-                           }
-                        
                     }
                 
                   

@@ -15,6 +15,8 @@ import java.awt.event.MouseListener;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -41,7 +43,18 @@ public class tablero implements MouseListener{
     String [] colores = {"GREEN","YELLOW","BLUE","ORANGE"};
     int colorAsignado = 0;
     jugador Jugador1 = new jugador();
+    boolean juegoComenzado = false;
+    int jugadoresTotales = 0;
+    ExecutorService pool = Executors.newFixedThreadPool(4);
     
+    
+    tablero(){
+        crearTablero();
+        crearPanelJuego(10,10);
+        llenarPanelJuego();
+        agregarPanelesTablero();        
+        contarMinasAdyacentes();
+    }
     
     public int getTamanox() {
         return tamanox;
@@ -106,7 +119,7 @@ public class tablero implements MouseListener{
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.85){              
+          if (Math.random() > 0.95){              
               casillaObjeto.setTieneMina(true);
               minasTablero++;
               panelJuego.add(casillaObjeto.getCasillaTablero());
@@ -126,9 +139,12 @@ public class tablero implements MouseListener{
     }
     
     public String asignarColor(){
+        if(colorAsignado==colores.length && juegoComenzado){
+        colorAsignado=0;
+    }
         if(colorAsignado<colores.length){
             String color = colores[colorAsignado];
-            colorAsignado++;        
+            colorAsignado++;       
             System.out.println("Asignado color: " + colorAsignado);
            return color;          
         }else{
@@ -203,13 +219,13 @@ public class tablero implements MouseListener{
     public void descubrirAdyacentes(int posicionx, int posiciony){
    casillasPorAbrir--;
    
-        if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 ){
+        if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 && !juego[posicionx][posiciony].tieneBandera){
             juego[posicionx][posiciony].revisada=true;
             juego[posicionx][posiciony].casillaTablero.setEnabled(false);
             juego[posicionx][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony].numero));
            
              if(esCasillaValida(posicionx-1,posiciony)){  
-                if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada){         
+                if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada && !juego[posicionx-1][posiciony].tieneBandera){         
                     juego[posicionx-1][posiciony].casillaTablero.setEnabled(false);
                     juego[posicionx-1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony].numero));
                      juego[posicionx-1][posiciony].revisada=true;
@@ -219,7 +235,7 @@ public class tablero implements MouseListener{
             }
             if(esCasillaValida(posicionx+1,posiciony)){
                 
-                if(!juego[posicionx+1][posiciony].tieneMina && !juego[posicionx+1][posiciony].revisada){      
+                if(!juego[posicionx+1][posiciony].tieneMina && !juego[posicionx+1][posiciony].revisada && !juego[posicionx+1][posiciony].tieneBandera){      
                      juego[posicionx+1][posiciony].casillaTablero.setEnabled(false);
                      juego[posicionx+1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony].numero));
                       juego[posicionx+1][posiciony].revisada=true;
@@ -228,7 +244,7 @@ public class tablero implements MouseListener{
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony+1)){               
-                if(!juego[posicionx][posiciony+1].tieneMina && !juego[posicionx][posiciony+1].revisada){     
+                if(!juego[posicionx][posiciony+1].tieneMina && !juego[posicionx][posiciony+1].revisada && !juego[posicionx][posiciony+1].tieneBandera){     
                      juego[posicionx][posiciony+1].casillaTablero.setEnabled(false);
                      juego[posicionx][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony+1].numero));
                       juego[posicionx][posiciony+1].revisada=true;
@@ -237,7 +253,7 @@ public class tablero implements MouseListener{
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony-1)){
-                if(!juego[posicionx][posiciony-1].tieneMina && !juego[posicionx][posiciony-1].revisada){              
+                if(!juego[posicionx][posiciony-1].tieneMina && !juego[posicionx][posiciony-1].revisada && !juego[posicionx][posiciony-1].tieneBandera){              
                      juego[posicionx][posiciony-1].casillaTablero.setEnabled(false);
                      juego[posicionx][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony-1].numero));
                       juego[posicionx][posiciony-1].revisada=true;
@@ -246,7 +262,7 @@ public class tablero implements MouseListener{
                 }            
             } 
             if(esCasillaValida(posicionx-1,posiciony+1)){
-                if(!juego[posicionx-1][posiciony+1].tieneMina &&  !juego[posicionx-1][posiciony+1].revisada){                  
+                if(!juego[posicionx-1][posiciony+1].tieneMina &&  !juego[posicionx-1][posiciony+1].revisada &&  !juego[posicionx-1][posiciony+1].tieneBandera){                  
                      juego[posicionx-1][posiciony+1].casillaTablero.setEnabled(false);
                      juego[posicionx-1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony+1].numero));
                       juego[posicionx-1][posiciony+1].revisada=true;
@@ -255,7 +271,7 @@ public class tablero implements MouseListener{
                 }            
             }
             if(esCasillaValida(posicionx-1,posiciony-1)){
-                if(!juego[posicionx-1][posiciony-1].tieneMina &&  !juego[posicionx-1][posiciony-1].revisada){       
+                if(!juego[posicionx-1][posiciony-1].tieneMina &&  !juego[posicionx-1][posiciony-1].revisada &&  !juego[posicionx-1][posiciony-1].tieneBandera){       
                    juego[posicionx-1][posiciony-1].casillaTablero.setEnabled(false);
                    juego[posicionx-1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony-1].numero));
                     juego[posicionx-1][posiciony-1].revisada=true;
@@ -264,7 +280,7 @@ public class tablero implements MouseListener{
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony+1)){
-                if(!juego[posicionx+1][posiciony+1].tieneMina &&  !juego[posicionx+1][posiciony+1].revisada){              
+                if(!juego[posicionx+1][posiciony+1].tieneMina &&  !juego[posicionx+1][posiciony+1].revisada &&  !juego[posicionx+1][posiciony+1].tieneBandera){              
                     juego[posicionx+1][posiciony+1].casillaTablero.setEnabled(false);
                     juego[posicionx+1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony+1].numero));
                      juego[posicionx+1][posiciony+1].revisada=true;
@@ -273,7 +289,7 @@ public class tablero implements MouseListener{
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony-1)){
-                if(!juego[posicionx+1][posiciony-1].tieneMina &&  !juego[posicionx + 1][posiciony - 1].revisada){                  
+                if(!juego[posicionx+1][posiciony-1].tieneMina &&  !juego[posicionx + 1][posiciony - 1].revisada &&  !juego[posicionx + 1][posiciony - 1].tieneBandera ){                  
                     juego[posicionx+1][posiciony-1].casillaTablero.setEnabled(false);
                     juego[posicionx+1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony-1].numero));
                      juego[posicionx+1][posiciony-1].revisada=true;
@@ -371,11 +387,9 @@ public class tablero implements MouseListener{
        if(map.get(e.getSource()).isTieneMina()){ 
             partidaPerdida();
             Jugador1.sigueJugando = false;
-<<<<<<< HEAD
-            
-=======
+
             JOptionPane.showMessageDialog(null, "Perdiste");
->>>>>>> 7dab20c7fda3c03629a4746bf5b9497109922b14
+
         }else{
             
             if(casillasPorAbrir != 0 && map.get(e.getSource()).casillaTablero.isEnabled()){

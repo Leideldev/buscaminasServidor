@@ -17,7 +17,7 @@ import javax.swing.JButton;
 public class casilla   {
     
     JButton casillaTablero;
-    tablero objetoTablero = new tablero();
+    tablero objetoTablero;
     boolean revisada=false;
     int posicionx;
     int posiciony;
