@@ -13,8 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
@@ -38,7 +41,9 @@ public class tablero implements MouseListener{
     JPanel panelJuego;
     int minasTablero;
     int marcaValida;
-    int casillasPorAbrir;
+    Set<String> names = new HashSet<>();
+    Set<PrintWriter> writers = new HashSet<>();
+    HashMap<PrintWriter, String> mapa = new HashMap <PrintWriter, String> ();
     casilla[][] juego;
     String [] colores = {"GREEN","YELLOW","BLUE","ORANGE"};
     int colorAsignado = 0;
@@ -135,7 +140,7 @@ public class tablero implements MouseListener{
           
       }   
       } 
-      casillasPorAbrir = map.size() - minasTablero;
+      
     }
     
     public String asignarColor(){
@@ -217,12 +222,97 @@ public class tablero implements MouseListener{
     }
     
     public void descubrirAdyacentes(int posicionx, int posiciony){
-   casillasPorAbrir--;
+  
    
         if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 && !juego[posicionx][posiciony].tieneBandera){
             juego[posicionx][posiciony].revisada=true;
             juego[posicionx][posiciony].casillaTablero.setEnabled(false);
             juego[posicionx][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony].numero));
+           
+             if(esCasillaValida(posicionx-1,posiciony)){  
+                if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada && !juego[posicionx-1][posiciony].tieneBandera){         
+                    juego[posicionx-1][posiciony].casillaTablero.setEnabled(false);
+                    juego[posicionx-1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony].numero));
+                     juego[posicionx-1][posiciony].revisada=true;
+                    descubrirAdyacentes(posicionx-1,  posiciony);
+                    
+                }            
+            }
+            if(esCasillaValida(posicionx+1,posiciony)){
+                
+                if(!juego[posicionx+1][posiciony].tieneMina && !juego[posicionx+1][posiciony].revisada && !juego[posicionx+1][posiciony].tieneBandera){      
+                     juego[posicionx+1][posiciony].casillaTablero.setEnabled(false);
+                     juego[posicionx+1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony].numero));
+                      juego[posicionx+1][posiciony].revisada=true;
+                     descubrirAdyacentes(posicionx+1,  posiciony);
+                    
+                }            
+            } 
+            if(esCasillaValida(posicionx,posiciony+1)){               
+                if(!juego[posicionx][posiciony+1].tieneMina && !juego[posicionx][posiciony+1].revisada && !juego[posicionx][posiciony+1].tieneBandera){     
+                     juego[posicionx][posiciony+1].casillaTablero.setEnabled(false);
+                     juego[posicionx][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony+1].numero));
+                      juego[posicionx][posiciony+1].revisada=true;
+                     descubrirAdyacentes(posicionx,  posiciony+1);
+                     
+                }            
+            } 
+            if(esCasillaValida(posicionx,posiciony-1)){
+                if(!juego[posicionx][posiciony-1].tieneMina && !juego[posicionx][posiciony-1].revisada && !juego[posicionx][posiciony-1].tieneBandera){              
+                     juego[posicionx][posiciony-1].casillaTablero.setEnabled(false);
+                     juego[posicionx][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony-1].numero));
+                      juego[posicionx][posiciony-1].revisada=true;
+                     descubrirAdyacentes( posicionx,  posiciony-1);
+                  
+                }            
+            } 
+            if(esCasillaValida(posicionx-1,posiciony+1)){
+                if(!juego[posicionx-1][posiciony+1].tieneMina &&  !juego[posicionx-1][posiciony+1].revisada &&  !juego[posicionx-1][posiciony+1].tieneBandera){                  
+                     juego[posicionx-1][posiciony+1].casillaTablero.setEnabled(false);
+                     juego[posicionx-1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony+1].numero));
+                      juego[posicionx-1][posiciony+1].revisada=true;
+                     descubrirAdyacentes(posicionx-1,  posiciony+1);
+                   
+                }            
+            }
+            if(esCasillaValida(posicionx-1,posiciony-1)){
+                if(!juego[posicionx-1][posiciony-1].tieneMina &&  !juego[posicionx-1][posiciony-1].revisada &&  !juego[posicionx-1][posiciony-1].tieneBandera){       
+                   juego[posicionx-1][posiciony-1].casillaTablero.setEnabled(false);
+                   juego[posicionx-1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony-1].numero));
+                    juego[posicionx-1][posiciony-1].revisada=true;
+                   descubrirAdyacentes(posicionx-1,  posiciony-1);
+                 
+                }            
+            } 
+            if(esCasillaValida(posicionx+1,posiciony+1)){
+                if(!juego[posicionx+1][posiciony+1].tieneMina &&  !juego[posicionx+1][posiciony+1].revisada &&  !juego[posicionx+1][posiciony+1].tieneBandera){              
+                    juego[posicionx+1][posiciony+1].casillaTablero.setEnabled(false);
+                    juego[posicionx+1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony+1].numero));
+                     juego[posicionx+1][posiciony+1].revisada=true;
+                    descubrirAdyacentes(posicionx+1,  posiciony+1);
+                   
+                }            
+            } 
+            if(esCasillaValida(posicionx+1,posiciony-1)){
+                if(!juego[posicionx+1][posiciony-1].tieneMina &&  !juego[posicionx + 1][posiciony - 1].revisada &&  !juego[posicionx + 1][posiciony - 1].tieneBandera ){                  
+                    juego[posicionx+1][posiciony-1].casillaTablero.setEnabled(false);
+                    juego[posicionx+1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony-1].numero));
+                     juego[posicionx+1][posiciony-1].revisada=true;
+                      descubrirAdyacentes(posicionx+1,  posiciony-1);
+                     
+                }            
+            }
+        }
+ 
+    }
+    
+    public void descubrirMinaAdyacente(int posicionx, int posiciony){
+  
+   
+        if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].tieneMina && !juego[posicionx][posiciony].tieneBandera){
+            juego[posicionx][posiciony].revisada=true;
+            juego[posicionx][posiciony].casillaTablero.setEnabled(false);
+            
            
              if(esCasillaValida(posicionx-1,posiciony)){  
                 if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada && !juego[posicionx-1][posiciony].tieneBandera){         
@@ -309,14 +399,15 @@ public class tablero implements MouseListener{
     }
     }
     
-    public String validarMinaMarcada(MouseEvent e){
-        if(map.get(e.getSource()).isTieneMina() && !map.get(e.getSource()).estaMarcada){
-            marcaValida++;
-            map.get(e.getSource()).estaMarcada=true;
-            return "valida";
-        }  else{
-           return "invalida";
-        }
+    public void validarMinaMarcada(int posicionx, int posiciony){
+       if(esCasillaValida(posicionx,posiciony)){
+          if( juego[posicionx][posiciony].isTieneMina() && !juego[posicionx][posiciony].estaMarcada ){
+              marcaValida++;
+              juego[posicionx][posiciony].estaMarcada = true;
+             
+              System.out.println("Minas marcadas validas: " + marcaValida);
+          }
+    }
         
     }
     
@@ -392,18 +483,18 @@ public class tablero implements MouseListener{
 
         }else{
             
-            if(casillasPorAbrir != 0 && map.get(e.getSource()).casillaTablero.isEnabled()){
+            if(map.get(e.getSource()).casillaTablero.isEnabled()){
               descubrirAdyacentes(map.get(e.getSource()).posicionx,map.get(e.getSource()).posiciony);  
             }
             map.get(e.getSource()).casillaTablero.setEnabled(false);  
             map.get(e.getSource()).casillaTablero.setText(String.valueOf(map.get(e.getSource()).numero));
             
-            if(marcaValida == minasTablero && casillasPorAbrir == 0){
+            if(marcaValida == minasTablero){
                       JOptionPane.showMessageDialog(null, "Ganaste");
                       Jugador1.ganador = true;
                   }
            System.out.println("minas validas marcadas: "+marcaValida);
-                  System.out.println("casillas abiertas: "+casillasPorAbrir);  
+                  System.out.println("casillas abiertas: ");  
         } 
        }
     }
@@ -433,16 +524,16 @@ public class tablero implements MouseListener{
                      Image img = ImageIO.read(new FileInputStream("C:\\Users\\Fer\\Documents\\NetBeansProjects\\buscaminasServidor\\src\\images\\bandera.bmp"));
                  map.get(e.getSource()).casillaTablero.setIcon(new ImageIcon(img));
                   map.get(e.getSource()).tieneBandera = true;
-                  validarMinaMarcada(e);
+                 
                 }          
-                  if(marcaValida == minasTablero && casillasPorAbrir == 0){
+                  if(marcaValida == minasTablero){
                       JOptionPane.showMessageDialog(null, "Ganaste");
                       Jugador1.ganador = true;
                   }else{
                       System.out.println("Quedan: " + minasTablero + " minas");
                   }
                   System.out.println("minas validas marcadas: "+marcaValida);
-                  System.out.println("casillas abiertas: "+casillasPorAbrir);
+                  System.out.println("casillas abiertas: ");
             }
             }
             }
