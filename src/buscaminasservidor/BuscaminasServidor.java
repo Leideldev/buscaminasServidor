@@ -39,8 +39,7 @@ public class BuscaminasServidor {
         
         try (ServerSocket listener = new ServerSocket(59001)) {
         tablero tableroJuego = new tablero();
-        //Timer timer = new Timer();
-        //timer.schedule(new temporizador(tableroJuego), 0, 5000); 
+        
             
             while (true) {
                  System.out.println(tableroJuego.jugadoresTotales);
@@ -63,10 +62,15 @@ public class BuscaminasServidor {
         private tablero juego;
         private Scanner in;
         private PrintWriter out;
+        Timer timer = new Timer();
+        
         
         public Handler(Socket socket, tablero tablero) {
             this.socket = socket;
             juego = tablero;
+            timer.schedule(new temporizador(juego), 10000, 10000); 
+           
+            System.out.println(timer.toString());
             try{
             in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -83,7 +87,7 @@ public class BuscaminasServidor {
                         if (!juego.names.contains(name)) {
                             String color= juego.asignarColor();
                             out.println("NAMEACCEPTED " + name);
-                            out.println("SIZE " + "," + 10 + "," + 10 + "," + color);
+                            out.println("SIZE " + "," + juego.getTamanox() + "," +  juego.getTamanoy() + "," + color);
                              juego.jugadoresTotales++;
                             juego.names.add(color);
                             break;

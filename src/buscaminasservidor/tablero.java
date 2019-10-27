@@ -44,6 +44,7 @@ public class tablero implements MouseListener{
     Set<String> names = new HashSet<>();
     Set<PrintWriter> writers = new HashSet<>();
     HashMap<PrintWriter, String> mapa = new HashMap <PrintWriter, String> ();
+    ArrayList <casilla> minas = new <casilla> ArrayList();
     casilla[][] juego;
     String [] colores = {"GREEN","YELLOW","BLUE","ORANGE"};
     int colorAsignado = 0;
@@ -55,7 +56,7 @@ public class tablero implements MouseListener{
     
     tablero(){
         crearTablero();
-        crearPanelJuego(10,10);
+        crearPanelJuego(100,100);
         llenarPanelJuego();
         agregarPanelesTablero();        
         contarMinasAdyacentes();
@@ -124,12 +125,13 @@ public class tablero implements MouseListener{
       for(int i=0;i < tamanox; i++){        
         for(int j=0;j < tamanoy; j++){        
           casilla casillaObjeto = new casilla(i,j);      
-          if (Math.random() > 0.95){              
+          if (Math.random() > 0.85){              
               casillaObjeto.setTieneMina(true);
               minasTablero++;
               panelJuego.add(casillaObjeto.getCasillaTablero());
               casillaObjeto.getCasillaTablero().addMouseListener(this);
               map.put(casillaObjeto.casillaTablero, casillaObjeto);
+              minas.add(casillaObjeto);
           }else{
            panelJuego.add(casillaObjeto.getCasillaTablero());
             casillaObjeto.getCasillaTablero().addMouseListener(this);
@@ -312,78 +314,105 @@ public class tablero implements MouseListener{
         if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].tieneMina && !juego[posicionx][posiciony].tieneBandera){
             juego[posicionx][posiciony].revisada=true;
             juego[posicionx][posiciony].casillaTablero.setEnabled(false);
-            
-           
+           juego[posicionx][posiciony].casillaTablero.setBackground(Color.red);
+            for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx][posiciony].posicionx + "," + juego[posicionx][posiciony].posiciony);
+                }
              if(esCasillaValida(posicionx-1,posiciony)){  
-                if(!juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada && !juego[posicionx-1][posiciony].tieneBandera){         
-                    juego[posicionx-1][posiciony].casillaTablero.setEnabled(false);
-                    juego[posicionx-1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony].numero));
+                if(juego[posicionx-1][posiciony].tieneMina && !juego[posicionx-1][posiciony].revisada && !juego[posicionx-1][posiciony].tieneBandera){         
+                    juego[posicionx-1][posiciony].casillaTablero.setEnabled(false);                 
                      juego[posicionx-1][posiciony].revisada=true;
-                    descubrirAdyacentes(posicionx-1,  posiciony);
+                     juego[posicionx-1][posiciony].casillaTablero.setBackground(Color.red);
+                      for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx-1][posiciony].posicionx + "," + juego[posicionx-1][posiciony].posiciony);
+                }
+                    descubrirMinaAdyacente(posicionx-1,  posiciony);
                     
                 }            
             }
             if(esCasillaValida(posicionx+1,posiciony)){
                 
-                if(!juego[posicionx+1][posiciony].tieneMina && !juego[posicionx+1][posiciony].revisada && !juego[posicionx+1][posiciony].tieneBandera){      
+                if(juego[posicionx+1][posiciony].tieneMina && !juego[posicionx+1][posiciony].revisada && !juego[posicionx+1][posiciony].tieneBandera){      
                      juego[posicionx+1][posiciony].casillaTablero.setEnabled(false);
-                     juego[posicionx+1][posiciony].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony].numero));
+                     
                       juego[posicionx+1][posiciony].revisada=true;
-                     descubrirAdyacentes(posicionx+1,  posiciony);
+                      juego[posicionx+1][posiciony].casillaTablero.setBackground(Color.red);
+                       for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx+1][posiciony].posicionx + "," + juego[posicionx+1][posiciony].posiciony);
+                }
+                     descubrirMinaAdyacente(posicionx+1,  posiciony);
                     
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony+1)){               
-                if(!juego[posicionx][posiciony+1].tieneMina && !juego[posicionx][posiciony+1].revisada && !juego[posicionx][posiciony+1].tieneBandera){     
+                if(juego[posicionx][posiciony+1].tieneMina && !juego[posicionx][posiciony+1].revisada && !juego[posicionx][posiciony+1].tieneBandera){     
                      juego[posicionx][posiciony+1].casillaTablero.setEnabled(false);
-                     juego[posicionx][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony+1].numero));
+                     juego[posicionx][posiciony+1].casillaTablero.setBackground(Color.red);
                       juego[posicionx][posiciony+1].revisada=true;
-                     descubrirAdyacentes(posicionx,  posiciony+1);
+                       for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx][posiciony+1].posicionx + "," + juego[posicionx][posiciony+1].posiciony);
+                }
+                     descubrirMinaAdyacente(posicionx,  posiciony+1);
                      
                 }            
             } 
             if(esCasillaValida(posicionx,posiciony-1)){
-                if(!juego[posicionx][posiciony-1].tieneMina && !juego[posicionx][posiciony-1].revisada && !juego[posicionx][posiciony-1].tieneBandera){              
+                if(juego[posicionx][posiciony-1].tieneMina && !juego[posicionx][posiciony-1].revisada && !juego[posicionx][posiciony-1].tieneBandera){              
                      juego[posicionx][posiciony-1].casillaTablero.setEnabled(false);
-                     juego[posicionx][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx][posiciony-1].numero));
+                     juego[posicionx][posiciony-1].casillaTablero.setBackground(Color.red);
                       juego[posicionx][posiciony-1].revisada=true;
-                     descubrirAdyacentes( posicionx,  posiciony-1);
+                       for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx][posiciony-1].posicionx + "," + juego[posicionx][posiciony-1].posiciony);
+                }
+                     descubrirMinaAdyacente( posicionx,  posiciony-1);
                   
                 }            
             } 
             if(esCasillaValida(posicionx-1,posiciony+1)){
-                if(!juego[posicionx-1][posiciony+1].tieneMina &&  !juego[posicionx-1][posiciony+1].revisada &&  !juego[posicionx-1][posiciony+1].tieneBandera){                  
+                if(juego[posicionx-1][posiciony+1].tieneMina &&  !juego[posicionx-1][posiciony+1].revisada &&  !juego[posicionx-1][posiciony+1].tieneBandera){                  
                      juego[posicionx-1][posiciony+1].casillaTablero.setEnabled(false);
-                     juego[posicionx-1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony+1].numero));
+                     juego[posicionx-1][posiciony+1].casillaTablero.setBackground(Color.red);
                       juego[posicionx-1][posiciony+1].revisada=true;
-                     descubrirAdyacentes(posicionx-1,  posiciony+1);
+                       for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx-1][posiciony+1].posicionx + "," + juego[posicionx-1][posiciony+1].posiciony);
+                }
+                     descubrirMinaAdyacente(posicionx-1,  posiciony+1);
                    
                 }            
             }
             if(esCasillaValida(posicionx-1,posiciony-1)){
-                if(!juego[posicionx-1][posiciony-1].tieneMina &&  !juego[posicionx-1][posiciony-1].revisada &&  !juego[posicionx-1][posiciony-1].tieneBandera){       
+                if(juego[posicionx-1][posiciony-1].tieneMina &&  !juego[posicionx-1][posiciony-1].revisada &&  !juego[posicionx-1][posiciony-1].tieneBandera){       
                    juego[posicionx-1][posiciony-1].casillaTablero.setEnabled(false);
-                   juego[posicionx-1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx-1][posiciony-1].numero));
+                  juego[posicionx-1][posiciony-1].casillaTablero.setBackground(Color.red);
                     juego[posicionx-1][posiciony-1].revisada=true;
-                   descubrirAdyacentes(posicionx-1,  posiciony-1);
+                     for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx-1][posiciony-1].posicionx + "," + juego[posicionx-1][posiciony-1].posiciony);
+                }
+                   descubrirMinaAdyacente(posicionx-1,  posiciony-1);
                  
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony+1)){
-                if(!juego[posicionx+1][posiciony+1].tieneMina &&  !juego[posicionx+1][posiciony+1].revisada &&  !juego[posicionx+1][posiciony+1].tieneBandera){              
+                if(juego[posicionx+1][posiciony+1].tieneMina &&  !juego[posicionx+1][posiciony+1].revisada &&  !juego[posicionx+1][posiciony+1].tieneBandera){              
                     juego[posicionx+1][posiciony+1].casillaTablero.setEnabled(false);
-                    juego[posicionx+1][posiciony+1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony+1].numero));
+                     juego[posicionx+1][posiciony+1].casillaTablero.setBackground(Color.red);
                      juego[posicionx+1][posiciony+1].revisada=true;
-                    descubrirAdyacentes(posicionx+1,  posiciony+1);
+                      for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx+1][posiciony+1].posicionx + "," + juego[posicionx+1][posiciony+1].posiciony);
+                }
+                    descubrirMinaAdyacente(posicionx+1,  posiciony+1);
                    
                 }            
             } 
             if(esCasillaValida(posicionx+1,posiciony-1)){
-                if(!juego[posicionx+1][posiciony-1].tieneMina &&  !juego[posicionx + 1][posiciony - 1].revisada &&  !juego[posicionx + 1][posiciony - 1].tieneBandera ){                  
+                if(juego[posicionx+1][posiciony-1].tieneMina &&  !juego[posicionx + 1][posiciony - 1].revisada &&  !juego[posicionx + 1][posiciony - 1].tieneBandera ){                  
                     juego[posicionx+1][posiciony-1].casillaTablero.setEnabled(false);
-                    juego[posicionx+1][posiciony-1].casillaTablero.setText(String.valueOf(juego[posicionx+1][posiciony-1].numero));
+                    juego[posicionx+1][posiciony-1].casillaTablero.setBackground(Color.red);
                      juego[posicionx+1][posiciony-1].revisada=true;
-                      descubrirAdyacentes(posicionx+1,  posiciony-1);
+                      for (PrintWriter writer : writers) {
+                    writer.println("EXPLOTADAS" + "," + juego[posicionx+1][posiciony-1].posicionx + "," + juego[posicionx+1][posiciony-1].posiciony);
+                }
+                      descubrirMinaAdyacente(posicionx+1,  posiciony-1);
                      
                 }            
             }
