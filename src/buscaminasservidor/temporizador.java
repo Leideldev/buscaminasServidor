@@ -26,10 +26,11 @@ public class temporizador extends TimerTask {
        
     if(!tableroJuego.minas.isEmpty()){
        int random = (int )(Math.random() * tableroJuego.minas.size());
+       if(!tableroJuego.minas.get(random).tieneBandera){
        tableroJuego.descubrirMinaAdyacente(tableroJuego.minas.get(random).posicionx,tableroJuego.minas.get(random).posiciony);     
-       tableroJuego.minas.remove(random);
-       
+       tableroJuego.minas.remove(random);     
            System.out.println("Minas restantes:" +  tableroJuego.minas.size());
+       }
     }
     }
     

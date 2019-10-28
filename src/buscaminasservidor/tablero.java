@@ -56,7 +56,7 @@ public class tablero implements MouseListener{
     
     tablero(){
         crearTablero();
-        crearPanelJuego(100,100);
+        crearPanelJuego(5,5);
         llenarPanelJuego();
         agregarPanelesTablero();        
         contarMinasAdyacentes();
@@ -146,7 +146,7 @@ public class tablero implements MouseListener{
     }
     
     public String asignarColor(){
-        if(colorAsignado==colores.length && juegoComenzado){
+        if(colorAsignado==colores.length || juegoComenzado){
         colorAsignado=0;
     }
         if(colorAsignado<colores.length){

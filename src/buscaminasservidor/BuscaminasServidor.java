@@ -33,24 +33,26 @@ public class BuscaminasServidor {
     //private static Set<PrintWriter> writers = new HashSet<>();
    //static HashMap <PrintWriter, String> map = new HashMap <PrintWriter, String> ();
    //static HashMap <String, ArrayList <String>> bloqueados = new HashMap <String, ArrayList <String>> ();
- 
+  static boolean juegoComenzado = false;
     public static void main(String[] args) throws Exception  {
          System.out.println("The chat server is running... ");
-        
+     
         try (ServerSocket listener = new ServerSocket(59001)) {
         tablero tableroJuego = new tablero();
         
             
             while (true) {
-                 System.out.println(tableroJuego.jugadoresTotales);
-                 if(tableroJuego.jugadoresTotales==4){
-                     tableroJuego = new tablero();
-                     System.out.println(tableroJuego.jugadoresTotales);
+  
+                 if(juegoComenzado){
+                     System.out.println("Juego comenzado");
+                     Timer timer = new Timer();
+                     timer.schedule(new temporizador(tableroJuego), 10000, 10000);
+                     tableroJuego = new tablero();    
+                     juegoComenzado = false;
                  }
+                 tableroJuego.pool.execute(new Handler(listener.accept(),tableroJuego));       
                  
-                tableroJuego.pool.execute(new Handler(listener.accept(),tableroJuego));
-                System.out.println(tableroJuego.jugadoresTotales);
-            }
+        }
         }
        
     }
@@ -62,15 +64,14 @@ public class BuscaminasServidor {
         private tablero juego;
         private Scanner in;
         private PrintWriter out;
-        Timer timer = new Timer();
+        
         
         
         public Handler(Socket socket, tablero tablero) {
             this.socket = socket;
-            juego = tablero;
-            timer.schedule(new temporizador(juego), 10000, 10000); 
+            juego = tablero;       
+                
            
-            System.out.println(timer.toString());
             try{
             in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -79,17 +80,25 @@ public class BuscaminasServidor {
             }
             while (true) {
                     out.println("SUBMITNAME");
-                    name = in.nextLine();
-                    if (name == null) {
-                        return;
-                    }
+               
+                   String color= juego.asignarColor();
+                   
                     synchronized (juego.names) {
-                        if (!juego.names.contains(name)) {
-                            String color= juego.asignarColor();
-                            out.println("NAMEACCEPTED " + name);
+                        if (!juego.names.contains("xd")) {
+                            
+                            out.println("NAMEACCEPTED " + color);
                             out.println("SIZE " + "," + juego.getTamanox() + "," +  juego.getTamanoy() + "," + color);
                              juego.jugadoresTotales++;
+                             juego.writers.add(out);
+                            if(juego.jugadoresTotales >= 2 && !juego.juegoComenzado){
+                                    for (PrintWriter writer : juego.writers) {
+                                   System.out.println("Jugadores mas de dos");
+                                writer.println("COMENZAR " + color);                                
+                }           
+                 }
+                                                  
                             juego.names.add(color);
+                           
                             break;
                         }
                     }
@@ -102,15 +111,21 @@ public class BuscaminasServidor {
                 
                 ArrayList <String> bloquea = new ArrayList <String>();
 
-                
-                System.out.println(juego.toString());
                 juego.mapa.put(out, name);
-                juego.writers.add(out);
-
+                 while(!juego.juegoComenzado){
+                                 String input = in.nextLine(); 
+                                if(input.toLowerCase().startsWith("comenzar")){
+                                   juegoComenzado = true;
+                         for (PrintWriter writer : juego.writers) {
+                             writer.println("comenzada");
+                                                           } 
+                                }
+                                 
+                            }
+                  
                 while (true) {
                   
-                    String input = in.nextLine();
-                   
+                    String input = in.nextLine();                
                     if (input.toLowerCase().startsWith("/quit")) {
                         return;
                     }           
@@ -184,6 +199,11 @@ public class BuscaminasServidor {
               }                    
                                } 
                            }
+                    }else if(input.toLowerCase().startsWith("comenzar")){
+                        juego.juegoComenzado = true;
+                         for (PrintWriter writer : juego.writers) {
+                             writer.println("comenzada");
+                                                           }
                     }
                 
                   
