@@ -62,8 +62,8 @@ public class BuscaminasServidor {
         private String name;
         private Socket socket;
         private tablero juego;
-        private Scanner in;
-        private PrintWriter out;
+        private Scanner lectorEntrada;
+        private PrintWriter escritorSalida;
         
         
         
@@ -73,23 +73,23 @@ public class BuscaminasServidor {
                 
            
             try{
-            in = new Scanner(socket.getInputStream());
-            out = new PrintWriter(socket.getOutputStream(), true);
+            lectorEntrada = new Scanner(socket.getInputStream());
+            escritorSalida = new PrintWriter(socket.getOutputStream(), true);
             }catch(IOException e){
                 
             }
             while (true) {
-                    out.println("SUBMITNAME");
+                    escritorSalida.println("SUBMITNAME");
                
                    String color= juego.asignarColor();
                    
                     synchronized (juego.names) {
                         if (!juego.names.contains("xd")) {
                             
-                            out.println("NAMEACCEPTED " + color);
-                            out.println("SIZE " + "," + juego.getTamanox() + "," +  juego.getTamanoy() + "," + color);
+                            escritorSalida.println("NAMEACCEPTED " + color);
+                            escritorSalida.println("SIZE " + "," + juego.getTamanox() + "," +  juego.getTamanoy() + "," + color);
                              juego.jugadoresTotales++;
-                             juego.writers.add(out);
+                             juego.writers.add(escritorSalida);
                             if(juego.jugadoresTotales >= 2 && !juego.juegoComenzado){
                                     for (PrintWriter writer : juego.writers) {
                                    System.out.println("Jugadores mas de dos");
@@ -111,21 +111,13 @@ public class BuscaminasServidor {
                 
                 ArrayList <String> bloquea = new ArrayList <String>();
 
-                juego.mapa.put(out, name);
-                 while(!juego.juegoComenzado){
-                                 String input = in.nextLine(); 
-                                if(input.toLowerCase().startsWith("comenzar")){
-                                   juegoComenzado = true;
-                         for (PrintWriter writer : juego.writers) {
-                             writer.println("comenzada");
-                                                           } 
-                                }
-                                 
-                            }
+                juego.mapa.put(escritorSalida, name);
+               
+               
                   
                 while (true) {
                   
-                    String input = in.nextLine();                
+                    String input = lectorEntrada.nextLine();                
                     if (input.toLowerCase().startsWith("/quit")) {
                         return;
                     }           
@@ -175,10 +167,10 @@ public class BuscaminasServidor {
                            arrayan = input.split(","); 
                            
                            if(juego.validarCasillaMinaClick(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2])) && !juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera){
-                               out.println("PERDEDOR");
+                               escritorSalida.println("PERDEDOR");
                            }else{
                                if(juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].numero == 0 && !juego.juego[Integer.parseInt(arrayan[1])][Integer.parseInt(arrayan[2])].tieneBandera){
-                                  juego.descubrirAdyacentes(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
+                                  juego.descubrirCasillasAdyacentes(Integer.parseInt(arrayan[1]),Integer.parseInt(arrayan[2]));
                                 for(int i=0;i < juego.tamanox; i++){ 
            for(int j=0;j < juego.tamanoy; j++){ 
              if(!juego.juego[i][j].casillaTablero.isEnabled()){
@@ -211,8 +203,8 @@ public class BuscaminasServidor {
             } catch (Exception e) {
                 System.out.println(e);
             } finally {
-                if (out != null) {
-                    juego.writers.remove(out);
+                if (escritorSalida != null) {
+                    juego.writers.remove(escritorSalida);
                 }
                 if (name != null) {
                     System.out.println(name + " is leaving");
