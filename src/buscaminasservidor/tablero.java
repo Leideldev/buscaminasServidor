@@ -48,10 +48,8 @@ public class tablero {
     casilla[][] juego;
     String [] colores = {"GREEN","YELLOW","BLUE","ORANGE"};
     int colorAsignado = 0;
-    jugador Jugador1 = new jugador();
-    boolean juegoComenzado = false;
     int jugadoresTotales = 0;
-    ExecutorService pool = Executors.newFixedThreadPool(4);
+    boolean juegoComenzado = false;
     
     
     tablero(){
@@ -228,7 +226,7 @@ public class tablero {
     }
     
     public void descubrirCasillasAdyacentes(int posicionx, int posiciony){
-  
+           
    
         if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].numero == 0 && !juego[posicionx][posiciony].tieneBandera){
             juego[posicionx][posiciony].revisada=true;
@@ -313,9 +311,11 @@ public class tablero {
     }
     
     public void descubrirMinaAdyacente(int posicionx, int posiciony){
-  
+        
    
         if(esCasillaValida(posicionx,posiciony) && juego[posicionx][posiciony].tieneMina && !juego[posicionx][posiciony].tieneBandera){
+            minasTablero--;
+            System.out.println("minas restantes" + minasTablero);
             juego[posicionx][posiciony].revisada=true;
             juego[posicionx][posiciony].casillaTablero.setEnabled(false);
            juego[posicionx][posiciony].casillaTablero.setBackground(Color.red);
@@ -436,9 +436,12 @@ public class tablero {
        if(esCasillaValida(posicionx,posiciony)){
           if( juego[posicionx][posiciony].isTieneMina() && !juego[posicionx][posiciony].estaMarcada ){
               marcaValida++;
+              minasTablero--;
               juego[posicionx][posiciony].estaMarcada = true;
              
               System.out.println("Minas marcadas validas: " + marcaValida);
+          }else{
+              minasTablero++;
           }
     }
         
